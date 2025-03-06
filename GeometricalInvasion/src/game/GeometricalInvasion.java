@@ -9,10 +9,12 @@ NOTE: This class is the metaphorical "main method" of your program,
  */
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 class GeometricalInvasion extends Game implements KeyListener {
 	static int counter = 0;
 	PlayerShip player;
+	private ArrayList<Projectile> projectiles = new ArrayList<>();
 
 	// Boolean variables for keyboard movement
 	boolean left = false;
@@ -46,7 +48,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 		brush.setColor(Color.white);
 		brush.drawString("Counter is " + counter,10,10);
 
-		// Moves the player depending on which keys are pressed.
+		// Updates the player's actions depending on what key is pressed.
 		if (left) {
 			player.moveLeft();
 		} else if (right) {
@@ -54,6 +56,11 @@ class GeometricalInvasion extends Game implements KeyListener {
 		}
 
 		player.paint(brush);
+		
+		// Creates the projectile and fires it.
+		for (Projectile bullet : projectiles) {
+			bullet.paint(brush);
+		}
 	}
 
 	// Checks if the left and right keys are pressed
@@ -65,9 +72,34 @@ class GeometricalInvasion extends Game implements KeyListener {
 			left = true;
 		} else if (keyCode == KeyEvent.VK_D) {
 			right = true;
+		} else if (keyCode == KeyEvent.VK_SPACE) {
+			fireProjectile();
 		}
 		
 		repaint();
+	}
+	
+	// Overrides the Game's update method to account for the player's controls.
+	@Override
+	public void update(Graphics brush) {
+		if (left) {
+			player.moveLeft();
+		} 
+		
+		if (right) {
+			player.moveRight();
+		}
+		
+		// This ensures that the projectile moves, and removes the projectiles if they aren't active.
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).move();
+			
+			if (!projectiles.get(i).isActive()) {
+				projectiles.remove(i);
+				i--;
+			}
+		}
+		super.update(brush);
 	}
 
 	// Checks if the left and right keys are released
@@ -87,6 +119,13 @@ class GeometricalInvasion extends Game implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 
+	}
+	
+	private void fireProjectile() {
+		double projectileX = player.position.x + 25;
+		double projectileY = player.position.y + 540;
+		
+		projectiles.add(new Projectile(projectileX, projectileY));
 	}
 
 	public static void main (String[] args) {

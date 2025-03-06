@@ -1,4 +1,5 @@
 package game;
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class PlayerShip extends Ship {
@@ -17,6 +18,7 @@ public class PlayerShip extends Ship {
 
 		int[] xPoints = {x, x + 50, x + 25};
 		int[] yPoints = {y + 600, y + 600, y + 550};
+		brush.setColor(Color.GREEN);
 		brush.fillPolygon(xPoints, yPoints, 3);
 	}
 
