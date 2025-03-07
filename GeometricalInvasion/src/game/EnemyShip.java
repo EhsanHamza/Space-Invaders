@@ -26,16 +26,20 @@ public class EnemyShip extends Ship {
 
 	}
 	private void moveDown() {
-		position.y -= moveSpeed;
+		position.y += moveSpeed;
 	}
+	
 	private void moveHorizontal() {
-		if(movingRight) {
+		if (movingRight) {
 			position.x += moveSpeed;
+			
 			if(position.x > 750) {
 				movingRight = false;
 			}	
+			
 		} else {
 			position.x -= moveSpeed;
+			
 			if(position.x < 50) {
 				movingRight = true;
 			}

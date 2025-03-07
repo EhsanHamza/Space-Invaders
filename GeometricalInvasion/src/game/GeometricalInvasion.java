@@ -14,6 +14,7 @@ import java.util.ArrayList;
 class GeometricalInvasion extends Game implements KeyListener {
 	static int counter = 0;
 	PlayerShip player;
+	EnemyShip enemy;
 	private ArrayList<Projectile> projectiles = new ArrayList<>();
 
 	// Boolean variables for keyboard movement
@@ -32,9 +33,12 @@ class GeometricalInvasion extends Game implements KeyListener {
 				new Point(25, 25)
 		};
 
-		Point position = new Point(400, 300);
-		double rotation = 0;
-		player = new PlayerShip(3, "Player", 1, 1, points, position, rotation);
+		Point playerPosition = new Point(400, 300);
+		Point enemyPosition = new Point(400, 100);
+		double playerRotation = 0;
+		double enemyRotation = 180;
+		player = new PlayerShip(3, "Player", 1, 1, points, playerPosition, playerRotation);
+		enemy = new EnemyShip(3, "Enemy", 1, 1, points, enemyPosition, enemyRotation);
 	}
 
 	public void paint(Graphics brush) {
@@ -56,6 +60,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 		}
 
 		player.paint(brush);
+		enemy.paint(brush);
 		
 		// Creates the projectile and fires it.
 		for (Projectile bullet : projectiles) {
