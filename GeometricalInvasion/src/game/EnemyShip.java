@@ -10,6 +10,17 @@ public class EnemyShip extends Ship {
 	public EnemyShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
+		movementTimer();
+	}
+	
+	private void movementTimer() {
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() { // Using anonymous class
+			public void run() {
+				move();
+			}
+		}, 0, 2000);
+		
 	}
 
 	public void paint(Graphics brush) {
