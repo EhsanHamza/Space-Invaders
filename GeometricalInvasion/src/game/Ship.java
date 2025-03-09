@@ -3,7 +3,7 @@ package game;
 import java.awt.Graphics;
 
 public abstract class Ship extends Polygon {
-	private int health;
+	protected int health;
 	private String name;
 	private int damage;
 	private int fireRate;
