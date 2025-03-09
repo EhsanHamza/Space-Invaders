@@ -84,7 +84,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 		}
 
 		// Creates the player.
-		player.paint(brush);
+		if(player.isAlive()) {
+			player.paint(brush);
+		}
 
 		// Creates the enemy and spawns it on the field.
 		for (EnemyShip enemy : enemies) {
@@ -191,16 +193,16 @@ class GeometricalInvasion extends Game implements KeyListener {
 	// A private void helper method that checks the collisions of projectiles
 	// to players or enemies.
 	private void checkCollisions() {
-		
+
 		// Damages the player if the enemy projectiles hit the player.
 		for (int i = 0; i < enemyProjectiles.size(); i++) {
 			Projectile enemyBullet = enemyProjectiles.get(i);
-			
+
 			if (enemyBullet.collidesWith(player)) {
 				player.damageTaken();
 				enemyBullet.setInactive();
 			}
-			
+
 			if (!enemyBullet.isActive()) {
 				enemyProjectiles.remove(i);
 				i--;
@@ -218,6 +220,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 					enemy.enemyDamageTaken(1);
 					playerBullet.setInactive();
 
+					// Removes enemy is the enemy is dead.
 					if (!enemy.enemyDead()) {
 						enemies.remove(j);
 						j--;
@@ -259,7 +262,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 				i--;
 			}
 		}
-		
+
 		checkCollisions();
 		super.update(brush);
 	}

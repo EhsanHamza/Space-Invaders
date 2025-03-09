@@ -58,6 +58,11 @@ public class PlayerShip extends Ship {
 	public void dead() {
 		alive = false;
 	}
+	
+	// returns if the player is alive or not.
+	public boolean isAlive() {
+		return alive;
+	}
 
 
 
