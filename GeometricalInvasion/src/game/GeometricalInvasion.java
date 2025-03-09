@@ -21,7 +21,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 	private ArrayList<Projectile> enemyProjectiles = new ArrayList<>();
 	private ArrayList<EnemyShip> enemies = new ArrayList<>();
 	private Timer enemyTimer = new Timer();
+	private long lastFireTime = 0;
 	private boolean movingRight = true;
+
 
 	// Boolean variables for keyboard movement
 	boolean left = false;
@@ -40,15 +42,20 @@ class GeometricalInvasion extends Game implements KeyListener {
 		};
 
 		// Initialize the positions and rotations.
-		Point playerPosition = new Point(400, 300);
-		Point enemyPosition = new Point(400, 100);
 		double playerRotation = 0;
 		double enemyRotation = 45;
 
-		// Initialize the enemies and the players.
-		player = new PlayerShip(3, "Player", 1, 1, points, playerPosition, playerRotation);
-		enemies.add(new EnemyShip(3, "Enemy1", 1, 1, points, enemyPosition, enemyRotation));
-		enemies.add(new EnemyShip(3, "Enemy2", 1, 1, points, new Point(325, 100), enemyRotation));
+		// Initialize the enemies and the player.
+		player = new PlayerShip(3, "Player", 1, 1, points, new Point(400, 300), playerRotation);
+		enemies.add(new EnemyShip(3, "Enemy1", 1, 1, points, new Point(450, 75), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy2", 1, 1, points, new Point(375, 75), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy3", 1, 1, points, new Point(300, 75), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy4", 1, 1, points, new Point(225, 75), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy5", 1, 1, points, new Point(150, 75), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy6", 1, 1, points, new Point(300, 150), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy7", 1, 1, points, new Point(225, 150), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy8", 1, 1, points, new Point(375, 150), enemyRotation));
+		enemies.add(new EnemyShip(3, "Enemy9", 1, 1, points, new Point(300, 225), enemyRotation));
 
 		// Handles the enemies' movement. Based on specific intervals.
 		enemyTimer.schedule(new TimerTask() {
@@ -88,7 +95,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 		for (Projectile bullet : projectiles) {
 			bullet.paint(brush);
 		}
-		
+
 		// Creates enemy projectiles and fires it.
 		for (Projectile enemyBullet : enemyProjectiles) {
 			enemyBullet.paint(brush);
@@ -130,12 +137,21 @@ class GeometricalInvasion extends Game implements KeyListener {
 
 	}
 
-	// Fires the projectiles, and controls it.
+	// Fires the projectiles, and controls it. Accounts for the fire rate of the playerShip.
 	private void fireProjectile() {
-		double projectileX = player.position.x + 25;
-		double projectileY = player.position.y + 540;
+		long time = System.currentTimeMillis();
 
-		projectiles.add(new Projectile(projectileX, projectileY, false));
+
+		if (time - lastFireTime >= player.getCooldownFireRate()) {
+			double projectileX = player.position.x + 25;
+			double projectileY = player.position.y + 525;
+
+			// Creates the new projectile if time - lastFireTime is greater than the fire rate.
+			projectiles.add(new Projectile(projectileX, projectileY, false));
+
+			// Sets lastFireTime to time.
+			lastFireTime = time;
+		}
 	}
 
 	// Controls the enemies' movement. Shifts directions and moves down when needed.
@@ -172,6 +188,46 @@ class GeometricalInvasion extends Game implements KeyListener {
 		repaint();
 	}
 
+	// A private void helper method that checks the collisions of projectiles
+	// to players or enemies.
+	private void checkCollisions() {
+		
+		// Damages the player if the enemy projectiles hit the player.
+		for (int i = 0; i < enemyProjectiles.size(); i++) {
+			Projectile enemyBullet = enemyProjectiles.get(i);
+			
+			if (enemyBullet.collidesWith(player)) {
+				player.damageTaken();
+				enemyBullet.setInactive();
+			}
+			
+			if (!enemyBullet.isActive()) {
+				enemyProjectiles.remove(i);
+				i--;
+			}
+		}
+
+		// Damages the enemy if the player projectiles hit the enemy.
+		for(int i = 0; i < projectiles.size(); i++) {
+			Projectile playerBullet = projectiles.get(i);
+
+			for (int j = 0; j < enemies.size(); j++) {
+				EnemyShip enemy = enemies.get(j);
+
+				if (playerBullet.collidesWith(enemy)) {
+					enemy.enemyDamageTaken(1);
+					playerBullet.setInactive();
+
+					if (!enemy.enemyDead()) {
+						enemies.remove(j);
+						j--;
+					}
+					break;
+				}
+			}
+		}
+	}
+
 
 	// Overrides the Game's update method to account for the player's controls.
 	@Override
@@ -203,6 +259,8 @@ class GeometricalInvasion extends Game implements KeyListener {
 				i--;
 			}
 		}
+		
+		checkCollisions();
 		super.update(brush);
 	}
 

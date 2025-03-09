@@ -4,13 +4,20 @@ import java.awt.Graphics;
 
 public class PlayerShip extends Ship {
 	private int moveSpeed = 3;
+	private long fireRate = 1;
 	private boolean alive;
 
 	// Constructor for the PlayerShip
 	public PlayerShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
+		this.fireRate = fireRate * 500;
 		this.alive = true;
+	}
+
+	// Returns the fireRate of the playerShip.
+	public long getCooldownFireRate() {
+		return fireRate;
 	}
 
 	// Draws and places the ship.
@@ -37,14 +44,17 @@ public class PlayerShip extends Ship {
 			position.x += moveSpeed;
 		}
 	}
+
+	// If player sustains a hit, reduce HP by 1.
 	public void damageTaken() {
-		if(alive) {
-			health--;
-		}
+		health--;
+
 		if(health <= 0) {
 			dead();
 		}
 	}
+
+	// If the player's HP reaches 0, end the game.
 	public void dead() {
 		alive = false;
 	}

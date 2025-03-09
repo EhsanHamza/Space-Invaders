@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 public class Projectile {
 	private double x, y;
 	private int speed = 10;
-	private int size = 5;
+	private int size = 10;
 	private boolean active = true;
 	private boolean enemyProjectile;
 	
@@ -40,9 +40,25 @@ public class Projectile {
 		}
 	}
 	
+	// Method for checking if projectiles are colliding with something.
+	public boolean collidesWith(Polygon target) {
+		if (target == null) {
+			return false;
+		}
+		
+	    return target.contains(new Point(x, y));
+	}
+	
 	// Returns if projectile is active or not.
 	public boolean isActive() {
 		return active;
 	}
+	
+	// Sets active to be Inactive, disabling the projectile.
+	public void setInactive() {
+		this.active = false;
+	}
+	
+	
 	
 }

@@ -6,13 +6,12 @@ import java.util.Random;
 
 public class EnemyShip extends Ship {
 	private Random random = new Random();
-	private boolean enemyAlive;
+	private boolean enemyAlive = true;
 
 	// Constructor for the enemyShips.
 	public EnemyShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
-		this.enemyAlive = true;
 	}
 
 	// The paint method for the enemyShips.
@@ -25,12 +24,12 @@ public class EnemyShip extends Ship {
 		brush.setColor(Color.RED);
 		brush.fillPolygon(xPoints, yPoints, 4);
 	}
-	
+
 	// 20% of firing every movement they do.
 	public boolean enemyFire() {
-		return random.nextDouble() < 0.2;
+		return random.nextDouble() < 0.3;
 	}
-	
+
 	// Constructs an enemy projectile, and fires it.
 	public Projectile fireProjectile() {
 		return new Projectile(position.x + 25, position.y + 50, true);
@@ -44,23 +43,23 @@ public class EnemyShip extends Ship {
 			position.x -= 20;
 		}
 	}
-	
+
 	// Moves down after hitting the boundaries.
 	public void moveDown() {
 		position.y += 40;
 	}
-	
+
+	// Reduces Enemy health by 1.
 	public void enemyDamageTaken(int damage) {
-		if(enemyAlive) {
-			health -= damage;
+		health -= damage;
+		
+		if (health <= 0) {
+			health = 0;
 		}
-		if(health <= 0) {
-			enemyDead();
-		}
-	}
-	
-	public void enemyDead() {
-		enemyAlive = false;
 	}
 
+	// Despawns the enemy if their HP is gone.
+	public boolean enemyDead() {
+		return health > 0;
+	}
 }
