@@ -2,27 +2,18 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Random;
 
 public class EnemyShip extends Ship {
-	private int moveSpeed = 5;
-	private boolean movingRight = true;
+	private Random random = new Random();
 
+	// Constructor for the enemyShips.
 	public EnemyShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
-		movementTimer();
-	}
-	
-	private void movementTimer() {
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() { // Using anonymous class
-			public void run() {
-				move();
-			}
-		}, 0, 2000);
-		
 	}
 
+	// The paint method for the enemyShips.
 	public void paint(Graphics brush) {
 		int x = (int) position.x;
 		int y = (int) position.y;
@@ -31,30 +22,30 @@ public class EnemyShip extends Ship {
 		int [] yPoints = {y, y, y + 50, y + 50};
 		brush.setColor(Color.RED);
 		brush.fillPolygon(xPoints, yPoints, 4);
-		
-		moveDown();
-		moveHorizontal();
-
-	}
-	private void moveDown() {
-		position.y += moveSpeed;
 	}
 	
-	private void moveHorizontal() {
-		if (movingRight) {
-			position.x += moveSpeed;
-			
-			if(position.x > 750) {
-				movingRight = false;
-			}	
-			
+	// 20% of firing every movement they do.
+	public boolean enemyFire() {
+		return random.nextDouble() < 0.2;
+	}
+	
+	// Constructs an enemy projectile, and fires it.
+	public Projectile fireProjectile() {
+		return new Projectile(position.x + 25, position.y + 50, true);
+	}
+
+	// Handles horizontal movement of the ship.
+	public void move(boolean moveRight) {
+		if (moveRight == true) {
+			position.x += 20;
 		} else {
-			position.x -= moveSpeed;
-			
-			if(position.x < 50) {
-				movingRight = true;
-			}
+			position.x -= 20;
 		}
+	}
+	
+	// Moves down after hitting the boundaries.
+	public void moveDown() {
+		position.y += 40;
 	}
 
 }

@@ -2,24 +2,32 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.function.Supplier;
 
 public class Projectile {
 	private double x, y;
 	private int speed = 10;
 	private int size = 5;
 	private boolean active = true;
+	private boolean enemyProjectile;
 	
-	public Projectile(double startX, double startY) {
+	public Projectile(double startX, double startY, boolean enemyProjectile) {
 		this.x = startX;
 		this.y = startY;
+		this.enemyProjectile = enemyProjectile;
+		
+		// Supplier Integer is an interface, returns an Integer.
+		// If enemyProjectile is true, return 5, projectiles move down.
+		// If enemyProjectile is false, return -10, projectiles move up.
+		this.speed = ((Supplier<Integer>) () -> enemyProjectile ? 5 : -10).get();
 	}
 	
 	public void move() {
-		// The projectile constantly moves up.
-		y -= speed;
+		// The projectile supports direction control, depending on the speed value.
+		y += speed;
 		
-		// If the position of the projectile is higher than the boundaries, it disappears.
-		if (y < 0) {
+		// If the position of the projectile is higher or lower than the set boundaries, disable the projectile.
+		if ((enemyProjectile && y > 1200) && (!enemyProjectile && y < 0)) {
 			active = false;
 		}
 	}
@@ -27,7 +35,7 @@ public class Projectile {
 	// Creates the player's projectile itself.
 	public void paint(Graphics brush) {
 		if (active) {
-			brush.setColor(Color.GREEN);
+			brush.setColor(enemyProjectile ? Color.RED : Color.GREEN);
 			brush.fillOval((int) x, (int) y, size, size + 10);
 		}
 	}

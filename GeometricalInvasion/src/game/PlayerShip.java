@@ -3,7 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class PlayerShip extends Ship {
-	private int moveSpeed = 5;
+	private int moveSpeed = 3;
 
 	// Constructor for the PlayerShip
 	public PlayerShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
