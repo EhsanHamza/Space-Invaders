@@ -6,11 +6,13 @@ import java.util.Random;
 
 public class EnemyShip extends Ship {
 	private Random random = new Random();
+	private boolean enemyAlive;
 
 	// Constructor for the enemyShips.
 	public EnemyShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
+		this.enemyAlive = true;
 	}
 
 	// The paint method for the enemyShips.
@@ -46,6 +48,19 @@ public class EnemyShip extends Ship {
 	// Moves down after hitting the boundaries.
 	public void moveDown() {
 		position.y += 40;
+	}
+	
+	public void enemyDamageTaken(int damage) {
+		if(enemyAlive) {
+			health -= damage;
+		}
+		if(health <= 0) {
+			enemyDead();
+		}
+	}
+	
+	public void enemyDead() {
+		enemyAlive = false;
 	}
 
 }
