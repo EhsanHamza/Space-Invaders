@@ -4,11 +4,13 @@ import java.awt.Graphics;
 
 public class PlayerShip extends Ship {
 	private int moveSpeed = 3;
+	private boolean alive;
 
 	// Constructor for the PlayerShip
 	public PlayerShip(int health, String name, int damage, int fireRate, Point[] shape, Point position,
 			double rotation) {
 		super(health, name, damage, fireRate, shape, position, rotation);
+		this.alive = true;
 	}
 
 	// Draws and places the ship.
@@ -35,6 +37,18 @@ public class PlayerShip extends Ship {
 			position.x += moveSpeed;
 		}
 	}
+	public void damageTaken() {
+		if(alive) {
+			health--;
+		}
+		if(health <= 0) {
+			dead();
+		}
+	}
+	public void dead() {
+		alive = false;
+	}
+
 
 
 }
