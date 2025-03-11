@@ -55,11 +55,12 @@ public class EnemyShip extends Ship {
 		
 		if (health <= 0) {
 			health = 0;
+			enemyAlive = false;
 		}
 	}
 
 	// Despawns the enemy if their HP is gone.
 	public boolean enemyDead() {
-		return health > 0;
+		return health <= 0;
 	}
 }

@@ -10,6 +10,7 @@ NOTE: This class is the metaphorical "main method" of your program,
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -210,45 +211,54 @@ class GeometricalInvasion extends Game implements KeyListener {
 	// A private void helper method that checks the collisions of projectiles
 	// to players or enemies.
 	private void checkCollision() {
-
-		// Damages the player if the enemy projectiles hit the player.
-		for (int i = 0; i < enemyProjectiles.size(); i++) {
-			Projectile enemyBullet = enemyProjectiles.get(i);
-
-			if (enemyBullet.colliding(player)) {
+		
+		// Damages the player if hit by enemy projectiles.
+		Iterator<Projectile> redProjectiles = enemyProjectiles.iterator();
+		while (redProjectiles.hasNext()) {
+			Projectile EBullet = redProjectiles.next();
+			
+			// If the bullet collides with the player, they take damage.
+			if (EBullet.colliding(player)) {
 				player.damageTaken();
-				enemyBullet.setInactive();
+				EBullet.setInactive();
 			}
-
-			if (!enemyBullet.isActive()) {
-				enemyProjectiles.remove(i);
-				i--;
+			
+			// Removes the enemy projectiles.
+			if (!EBullet.isActive()) {
+				redProjectiles.remove();
 			}
 		}
-
-		// Damages the enemy if the player projectiles hit the enemy.
-		for(int i = 0; i < projectiles.size(); i++) {
-			Projectile playerBullet = projectiles.get(i);
-
-			for (int j = 0; j < enemies.size(); j++) {
-				EnemyShip enemy = enemies.get(j);
-
-				if (playerBullet.colliding(enemy)) {
+		// Damages the enemy if it is hit by player's projectiles.
+		Iterator<Projectile> greenProjectiles = projectiles.iterator();
+		while (greenProjectiles.hasNext()) {
+			Projectile PBullet = greenProjectiles.next();
+			
+			// Iterate through playerProjectiles and enemies, checking if any collide together.
+			Iterator<EnemyShip> enemyIterator = enemies.iterator();
+			while (enemyIterator.hasNext()) {
+				EnemyShip enemy = enemyIterator.next();
+				
+				// Damages the enemy if it collides.
+				if (PBullet.colliding(enemy)) {
 					enemy.enemyDamageTaken(1);
-					playerBullet.setInactive();
-
-					// Removes enemy is the enemy is dead.
+					PBullet.setInactive();
+					
+					// If dead, remove the enemy.
 					if (!enemy.enemyDead()) {
-						enemies.remove(j);
-						j--;
-
-						// 30% of spawning a PowerUp if an enemy is destroyed.
-						if (new Random().nextDouble() < 0.3) {
+						enemyIterator.remove();
+						
+						// 30% chance of spawning a power up.
+						if (new Random().nextDouble() < 0.9) {
 							powerUps.add(new PowerUps(enemy.position.clone()));
 						}
 					}
 					break;
 				}
+			}
+			
+			// Remove Player's bullet if inactive.
+			if (!PBullet.isActive()) {
+				greenProjectiles.remove();
 			}
 		}
 
@@ -272,10 +282,10 @@ class GeometricalInvasion extends Game implements KeyListener {
 
 	// Checks if the powerUp collides with the player.
 	private boolean powerCollision(PlayerShip player, PowerUps power) {
-		Rectangle playerBound = new Rectangle((int) player.position.x, (int) player.position.y, 50, 50);
-		Rectangle powerBound = new Rectangle((int) power.getPosition().x, (int) power.getPosition().y, 20, 20);
+		Rectangle playerHitbox = new Rectangle((int) player.position.x, (int) player.position.y, 50, 50);
+		Rectangle powerUpHitbox = new Rectangle((int) power.getPosition().x, (int) power.getPosition().y, 20, 20);
 
-		boolean collision = playerBound.intersects(powerBound);
+		boolean collision = playerHitbox.intersects(powerUpHitbox);
 		return collision;
 	}
 

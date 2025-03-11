@@ -150,7 +150,7 @@ public class PlayerShip extends Ship {
 
 		// Setter for active, to false.
 		public void powerInactive() {
-			active = false;
+			this.active = false;
 		}
 
 		// Moves the powerUp downwards.

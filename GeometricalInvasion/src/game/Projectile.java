@@ -27,7 +27,7 @@ public class Projectile {
 		y += speed;
 		
 		// If the position of the projectile is higher or lower than the set boundaries, disable the projectile.
-		if ((enemyProjectile && y > 1200) && (!enemyProjectile && y < 0)) {
+		if ((enemyProjectile && y > 1200) || (!enemyProjectile && y < 0)) {
 			active = false;
 		}
 	}
