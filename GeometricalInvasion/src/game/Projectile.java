@@ -6,14 +6,14 @@ import java.util.function.Supplier;
 
 public class Projectile {
 	private double x, y;
-	private int speed = 10;
-	private int size = 10;
+	private int speed = 15;
+	private int size = 5;
 	private boolean active = true;
 	private boolean enemyProjectile;
 	
-	public Projectile(double startX, double startY, boolean enemyProjectile) {
-		this.x = startX;
-		this.y = startY;
+	public Projectile(double x, double y, boolean enemyProjectile) {
+		this.x = x;
+		this.y = y;
 		this.enemyProjectile = enemyProjectile;
 		
 		// Supplier Integer is an interface, returns an Integer.
@@ -32,16 +32,16 @@ public class Projectile {
 		}
 	}
 	
-	// Creates the player's projectile itself.
+	// Creates the projectiles itself.
 	public void paint(Graphics brush) {
 		if (active) {
 			brush.setColor(enemyProjectile ? Color.RED : Color.GREEN);
-			brush.fillOval((int) x, (int) y, size, size + 10);
+			brush.fillOval((int) x, (int) y, size + 3, size + 10);
 		}
 	}
 	
 	// Method for checking if projectiles are colliding with something.
-	public boolean collidesWith(Polygon target) {
+	public boolean colliding(Polygon target) {
 		if (target == null) {
 			return false;
 		}

@@ -31,6 +31,11 @@ public abstract class Ship extends Polygon {
 	public int getHealth() {
 		return health;
 	}
+	
+	// Setter for ship health
+	public void setHealth(int health) {
+		this.health = health;
+	}
 
 	// Getter for name
 	public String getName() {
@@ -40,6 +45,11 @@ public abstract class Ship extends Polygon {
 	// Getter for damage
 	public int getDamage() {
 		return damage;
+	}
+	
+	// Setter for damage
+	public void setDamage(int damage) {
+		this.damage = damage;
 	}
 
 	// Getter for fireRate

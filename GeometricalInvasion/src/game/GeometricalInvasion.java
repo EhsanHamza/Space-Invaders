@@ -10,19 +10,25 @@ NOTE: This class is the metaphorical "main method" of your program,
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import game.PlayerShip.PowerUps;
+
 class GeometricalInvasion extends Game implements KeyListener {
+
+	// Instance Variables
 	static int counter = 0;
 	PlayerShip player;
 	EnemyShip enemy;
 	private ArrayList<Projectile> projectiles = new ArrayList<>();
 	private ArrayList<Projectile> enemyProjectiles = new ArrayList<>();
 	private ArrayList<EnemyShip> enemies = new ArrayList<>();
-	private Timer enemyTimer = new Timer();
+	private ArrayList<PowerUps> powerUps = new ArrayList<>();
+	private Timer enemyTimeMove = new Timer();
 	private long lastFireTime = 0;
-	private boolean movingRight = true;
+	private boolean moveRight = true;
 
 
 	// Boolean variables for keyboard movement
@@ -58,7 +64,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 		enemies.add(new EnemyShip(3, "Enemy9", 1, 1, points, new Point(300, 225), enemyRotation));
 
 		// Handles the enemies' movement. Based on specific intervals.
-		enemyTimer.schedule(new TimerTask() {
+		enemyTimeMove.schedule(new TimerTask() {
 			public void run() {
 				moveEnemies();
 			}
@@ -102,38 +108,49 @@ class GeometricalInvasion extends Game implements KeyListener {
 		for (Projectile enemyBullet : enemyProjectiles) {
 			enemyBullet.paint(brush);
 		}
+
+		// Creates powerUps for the player.
+		for (PowerUps power : powerUps) {
+			power.paint(brush);
+		}
 	}
 
 	// Checks if the left and right keys are pressed
 	@Override
 	public void keyPressed(KeyEvent e) {
-		int keyCode = e.getKeyCode();
+		int key = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_A) {
-			left = true;
-		} else if (keyCode == KeyEvent.VK_D) {
-			right = true;
-		} else if (keyCode == KeyEvent.VK_SPACE) {
-			fireProjectile();
+		if (player.isAlive()) {
+			if (key == KeyEvent.VK_A) {
+				left = true;
+
+			} else if (key == KeyEvent.VK_D) {
+				right = true;
+
+			} else if (key == KeyEvent.VK_SPACE) {
+				fireProjectile();
+			}
+
+			repaint();
 		}
-
-		repaint();
 	}
 
 	// Checks if the left and right keys are released
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int keyCode = e.getKeyCode();
+		int key = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_A) {
+		if (key == KeyEvent.VK_A) {
 			left = false;
-		} else if (keyCode == KeyEvent.VK_D) {
+
+		} else if (key == KeyEvent.VK_D) {
 			right = false;
 		}
 
 		repaint();
 	}
 
+	// Is not used throughout the game, but is required for the class.
 	@Override
 	public void keyTyped(KeyEvent e) {
 
@@ -143,10 +160,10 @@ class GeometricalInvasion extends Game implements KeyListener {
 	private void fireProjectile() {
 		long time = System.currentTimeMillis();
 
-
+		// Checks if enough time has passed for the fireRate.
 		if (time - lastFireTime >= player.getCooldownFireRate()) {
 			double projectileX = player.position.x + 25;
-			double projectileY = player.position.y + 525;
+			double projectileY = player.position.y + 530;
 
 			// Creates the new projectile if time - lastFireTime is greater than the fire rate.
 			projectiles.add(new Projectile(projectileX, projectileY, false));
@@ -158,27 +175,27 @@ class GeometricalInvasion extends Game implements KeyListener {
 
 	// Controls the enemies' movement. Shifts directions and moves down when needed.
 	private void moveEnemies() {
-		boolean atEdge = false;
+		boolean onEdge = false;
 
 		// Checks if at least ONE enemy is at the edge. If true, then sets atEdge to true, and breaks loop.
 		for (EnemyShip enemy: enemies) {
-			if ((movingRight && enemy.position.x >= 700) || !movingRight && enemy.position.x <= 150) {
-				atEdge = true;
+			if ((moveRight && enemy.position.x >= 700) || (!moveRight && enemy.position.x <= 150)) {
+				onEdge = true;
 				break;
 			}
 		}
 
 		// If true, then all enemies move down, then switch direction.
 		// If false, then continue moving.
-		if (atEdge) {
+		if (onEdge) {
 			for (EnemyShip enemies : enemies) {
 				enemies.moveDown();
 			}
-			movingRight = !movingRight;
+			moveRight = !moveRight;
 
 		} else {
 			for (EnemyShip enemies: enemies) {
-				enemies.move(movingRight);
+				enemies.move(moveRight);
 
 				// Calls the enemyFire method. If true, then it fires, at a 20% chance.
 				if (enemies.enemyFire()) {
@@ -192,13 +209,13 @@ class GeometricalInvasion extends Game implements KeyListener {
 
 	// A private void helper method that checks the collisions of projectiles
 	// to players or enemies.
-	private void checkCollisions() {
+	private void checkCollision() {
 
 		// Damages the player if the enemy projectiles hit the player.
 		for (int i = 0; i < enemyProjectiles.size(); i++) {
 			Projectile enemyBullet = enemyProjectiles.get(i);
 
-			if (enemyBullet.collidesWith(player)) {
+			if (enemyBullet.colliding(player)) {
 				player.damageTaken();
 				enemyBullet.setInactive();
 			}
@@ -216,7 +233,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 			for (int j = 0; j < enemies.size(); j++) {
 				EnemyShip enemy = enemies.get(j);
 
-				if (playerBullet.collidesWith(enemy)) {
+				if (playerBullet.colliding(enemy)) {
 					enemy.enemyDamageTaken(1);
 					playerBullet.setInactive();
 
@@ -224,13 +241,43 @@ class GeometricalInvasion extends Game implements KeyListener {
 					if (!enemy.enemyDead()) {
 						enemies.remove(j);
 						j--;
+
+						// 30% of spawning a PowerUp if an enemy is destroyed.
+						if (new Random().nextDouble() < 0.3) {
+							powerUps.add(new PowerUps(enemy.position.clone()));
+						}
 					}
 					break;
 				}
 			}
 		}
+
+		// Checks if the player has collided with a powerUp.
+		for (int p = 0; p < powerUps.size(); p++) {
+			PowerUps powerUp = powerUps.get(p);
+			powerUp.projectileMove();
+
+			if (powerCollision(player, powerUp)) {
+				player.increaseStats(powerUp.getColor());
+				powerUp.powerInactive();
+				powerUps.remove(p);
+				p--;
+				
+			} else if (powerUp.getPosition().y > height) {
+				powerUps.remove(p);
+				p--;
+			}
+		}
 	}
 
+	// Checks if the powerUp collides with the player.
+	private boolean powerCollision(PlayerShip player, PowerUps power) {
+		Rectangle playerBound = new Rectangle((int) player.position.x, (int) player.position.y, 50, 50);
+		Rectangle powerBound = new Rectangle((int) power.getPosition().x, (int) power.getPosition().y, 20, 20);
+
+		boolean collision = playerBound.intersects(powerBound);
+		return collision;
+	}
 
 	// Overrides the Game's update method to account for the player's controls.
 	@Override
@@ -263,7 +310,7 @@ class GeometricalInvasion extends Game implements KeyListener {
 			}
 		}
 
-		checkCollisions();
+		checkCollision();
 		super.update(brush);
 	}
 

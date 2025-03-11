@@ -27,7 +27,7 @@ public class EnemyShip extends Ship {
 
 	// 20% of firing every movement they do.
 	public boolean enemyFire() {
-		return random.nextDouble() < 0.3;
+		return random.nextDouble() < 0.2;
 	}
 
 	// Constructs an enemy projectile, and fires it.
