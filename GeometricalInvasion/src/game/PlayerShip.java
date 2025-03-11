@@ -191,5 +191,11 @@ public class PlayerShip extends Ship {
 			brush.fillPolygon(xPoints, yPoints, 4);
 		}
 	}
+	public void paintGameOver(Graphics brush) {
+	    brush.setColor(Color.WHITE);
+	    brush.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 50)); 
+	    String message = "GAME OVER";
+	    brush.drawString(message, 250, 300); // This will display the text at the center of the screen.
+	}
 }
 
