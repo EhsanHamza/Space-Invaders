@@ -93,6 +93,8 @@ class GeometricalInvasion extends Game implements KeyListener {
 		// Creates the player.
 		if(player.isAlive()) {
 			player.paint(brush);
+		} else {
+			player.paintGameOver(brush);
 		}
 
 		// Creates the enemy and spawns it on the field.
