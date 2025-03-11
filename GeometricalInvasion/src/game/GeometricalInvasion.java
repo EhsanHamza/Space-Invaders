@@ -16,6 +16,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import game.PlayerShip.PowerUps;
+/**
+ * GeometricalInvasion is the main game class that extends Game and implements KeyListener.
+ * It controls player movement, enemy movement, shooting mechanics, and collision detection.
+ */
 
 class GeometricalInvasion extends Game implements KeyListener {
 
@@ -35,7 +39,10 @@ class GeometricalInvasion extends Game implements KeyListener {
 	// Boolean variables for keyboard movement
 	boolean left = false;
 	boolean right = false;
-
+	
+	/**
+     * Constructor initializes the game window, player, enemies, and starts enemy movement.
+     */
 	public GeometricalInvasion() {
 		super("Geometrical Invasion",800,1200);
 		this.setFocusable(true);
@@ -71,6 +78,10 @@ class GeometricalInvasion extends Game implements KeyListener {
 			}
 		}, 0, 1000);
 	}
+	/**
+     * Paint method to make all game elements.
+     * @param brush that draws the graphics
+     */
 
 	public void paint(Graphics brush) {
 		brush.setColor(Color.black);
@@ -119,6 +130,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 	}
 
 	// Checks if the left and right keys are pressed
+	/**
+     * Handles key press events for movement and shooting.
+     */
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
@@ -139,6 +153,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 	}
 
 	// Checks if the left and right keys are released
+	/**
+     * Handles key release events to stop movement.
+     */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
@@ -160,6 +177,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 	}
 
 	// Fires the projectiles, and controls it. Accounts for the fire rate of the playerShip.
+	/**
+     * Fires a projectile, ensuring the correct firing rate.
+     */
 	private void fireProjectile() {
 		long time = System.currentTimeMillis();
 
@@ -177,6 +197,9 @@ class GeometricalInvasion extends Game implements KeyListener {
 	}
 
 	// Controls the enemies' movement. Shifts directions and moves down when needed.
+	/**
+     * Moves enemies and handles direction change when reaching screen edges.
+     */
 	private void moveEnemies() {
 		boolean onEdge = false;
 
@@ -210,8 +233,10 @@ class GeometricalInvasion extends Game implements KeyListener {
 		repaint();
 	}
 
-	// A private void helper method that checks the collisions of projectiles
-	// to players or enemies.
+	/** 
+	 * A private void helper method that checks the collisions of projectiles to players or enemies.
+	 */
+
 	private void checkCollision() {
 		
 		// Damages the player if hit by enemy projectiles.
@@ -246,11 +271,11 @@ class GeometricalInvasion extends Game implements KeyListener {
 					PBullet.setInactive();
 					
 					// If dead, remove the enemy.
-					if (enemy.enemyDead()) {
+					if (!enemy.enemyDead()) {
 						enemyIterator.remove();
 						
 						// 30% chance of spawning a power up.
-						if (new Random().nextDouble() < 0.3) {
+						if (new Random().nextDouble() < 0.9) {
 							powerUps.add(new PowerUps(enemy.position.clone()));
 						}
 					}
@@ -281,8 +306,13 @@ class GeometricalInvasion extends Game implements KeyListener {
 			}
 		}
 	}
-
-	// Checks if the powerUp collides with the player.
+	
+    /**
+     * Checks if the powerUp collides with the player.
+     * @param  player the player ship
+     * @param power the powerUp that collides with the player.
+     * @return true if powerUp collied with player
+     */
 	private boolean powerCollision(PlayerShip player, PowerUps power) {
 		Rectangle playerHitbox = new Rectangle((int) player.position.x, (int) player.position.y, 50, 50);
 		Rectangle powerUpHitbox = new Rectangle((int) power.getPosition().x, (int) power.getPosition().y, 20, 20);
@@ -290,8 +320,11 @@ class GeometricalInvasion extends Game implements KeyListener {
 		boolean collision = playerHitbox.intersects(powerUpHitbox);
 		return collision;
 	}
-
-	// Overrides the Game's update method to account for the player's controls.
+    /**
+     * Overrides the Game's update method to account for the player's controls.
+     * @param brush Draws the graphics
+     */
+	
 	@Override
 	public void update(Graphics brush) {
 		if (left) {
