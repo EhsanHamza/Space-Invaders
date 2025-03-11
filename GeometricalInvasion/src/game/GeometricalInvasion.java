@@ -246,11 +246,11 @@ class GeometricalInvasion extends Game implements KeyListener {
 					PBullet.setInactive();
 					
 					// If dead, remove the enemy.
-					if (!enemy.enemyDead()) {
+					if (enemy.enemyDead()) {
 						enemyIterator.remove();
 						
 						// 30% chance of spawning a power up.
-						if (new Random().nextDouble() < 0.9) {
+						if (new Random().nextDouble() < 0.3) {
 							powerUps.add(new PowerUps(enemy.position.clone()));
 						}
 					}

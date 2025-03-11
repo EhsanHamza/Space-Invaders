@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.function.Supplier;
 
-public class Projectile {
+public class Projectile implements ProjectileInterface {
 	private double x, y;
 	private int speed = 15;
 	private int size = 5;
